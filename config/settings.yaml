@@ -1,0 +1,25 @@
+gcp:
+  credentials: ${GCP_CREDENTIALS}
+  projects: ${GCP_PROJECTS}
+
+vcenter:
+  enabled: ${VCENTER_ENABLED}
+  retries: 3        # numero de reintentos por host
+  delay: 10         # segundos entre reintentos
+  hosts:
+    - host: ${VCENTER_HOST_1}
+      user: ${VCENTER_USER_1}
+      password: ${VCENTER_PASS_1}
+      port: ${VCENTER_PORT_1}
+      source: BRIDGE
+    - host: ${VCENTER_HOST_2}
+      user: ${VCENTER_USER_2}
+      password: ${VCENTER_PASS_2}
+      port: ${VCENTER_PORT_2}
+      source: GCVE
+
+output:
+  path: ${OUTPUT_PATH}
+
+log:
+  path: ${LOG_PATH}
