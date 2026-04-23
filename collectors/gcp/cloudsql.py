@@ -5,6 +5,7 @@ Usa la API REST via googleapiclient ya que no hay SDK dedicado liviano.
 """
 
 import logging
+import re
 
 import google.auth
 import google.auth.transport.requests
@@ -95,6 +96,39 @@ class CloudSQLCollector(BaseCollector):
         backup_cfg = instance.get("settings", {}).get("backupConfiguration", {})
         return "SI" if backup_cfg.get("enabled") else "NO"
 
+    def _parse_tier(self, tier: str) -> tuple:
+        """Extrae (vcpus, ram_gb) del tier de Cloud SQL."""
+        t = tier.upper()
+
+        # db-custom-{vcpus}-{memory_mb}
+        m = re.match(r"DB-CUSTOM-(\d+)-(\d+)", t)
+        if m:
+            return int(m.group(1)), round(int(m.group(2)) / 1024, 1)
+
+        # db-n1-standard-{n}: 3.75 GB RAM por vCPU
+        m = re.match(r"DB-N1-STANDARD-(\d+)", t)
+        if m:
+            n = int(m.group(1))
+            return n, round(n * 3.75, 1)
+
+        # db-n1-highmem-{n}: 6.5 GB RAM por vCPU
+        m = re.match(r"DB-N1-HIGHMEM-(\d+)", t)
+        if m:
+            n = int(m.group(1))
+            return n, round(n * 6.5, 1)
+
+        # db-perf-optimized-N-{vcpus} (generacion actual)
+        m = re.match(r"DB-PERF-OPTIMIZED-N-(\d+)", t)
+        if m:
+            n = int(m.group(1))
+            return n, round(n * 3.75, 1)
+
+        # instancias compartidas
+        if t == "DB-F1-MICRO":  return 1, 0.6
+        if t == "DB-G1-SMALL":  return 1, 1.7
+
+        return 0, 0.0
+
     def _get_disk_info(self, instance: dict) -> tuple:
         settings  = instance.get("settings", {})
         disco_gb  = int(settings.get("dataDiskSizeGb", 0))
@@ -125,6 +159,7 @@ class CloudSQLCollector(BaseCollector):
                     region      = inst.get("region", "").upper()
                     zone        = inst.get("gceZone", "").upper()
                     disco_gb, tipo_disco = self._get_disk_info(inst)
+                    vcpus, ram_gb = self._parse_tier(tier)
 
                     raw_state  = inst.get("state", "UNKNOWN_STATE")
                     activation = settings.get("activationPolicy", "ALWAYS")
@@ -144,6 +179,8 @@ class CloudSQLCollector(BaseCollector):
                         proyecto             = project.upper(),
                         region               = region,
                         zona                 = zone,
+                        vcpus                = vcpus,
+                        ram_gb               = ram_gb,
                         disco_gb             = disco_gb,
                         tipo_disco           = tipo_disco,
                         sistema_operativo    = self._get_db_version(db_version),

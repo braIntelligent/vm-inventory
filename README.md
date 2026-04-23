@@ -89,7 +89,23 @@ vm-inventory/
 
 ### Hoja CLOUD RUN
 
-`NOMBRE SERVICIO` · `ESTADO` · `FUENTE` · `PROYECTO` · `REGION` · `URL` · `CPU` · `MEMORIA (GB)` · `MIN INSTANCIAS` · `MAX INSTANCIAS` · `CONCURRENCIA` · `INGRESS` · `ULTIMA REVISION` · `FECHA CREACION` · `ULTIMA ACTUALIZACION`
+| Campo | Descripcion |
+|---|---|
+| `NOMBRE SERVICIO` | Nombre del servicio Cloud Run (identificador unico dentro del proyecto y region) |
+| `ESTADO` | `ACTIVO` = listo y sirviendo trafico · `ERROR` = ultimo despliegue fallo · `DESPLEGANDO` = actualizacion en curso |
+| `FUENTE` | Siempre `GCP` |
+| `PROYECTO` | Proyecto GCP donde esta deployado el servicio |
+| `REGION` | Region donde corre (ej: `southamerica-west1`, `us-central1`) |
+| `URL` | Endpoint publico del servicio (ej: `https://mi-api-abc123-uc.a.run.app`). Vacio si el acceso es solo interno |
+| `CPU` | vCPUs asignadas por instancia. Puede ser fraccion: `0.5` = 500 millicores |
+| `MEMORIA (GB)` | RAM asignada por instancia en GB |
+| `MIN INSTANCIAS` | Instancias minimas siempre activas. `0` = escala a cero (cold start al llegar trafico, sin costo en reposo). Valores > 0 eliminan cold start pero generan costo constante |
+| `MAX INSTANCIAS` | Tope de escalado automatico. `SIN LIMITE` = sin tope configurado |
+| `CONCURRENCIA` | Maximo de requests simultaneos que procesa una sola instancia (default: 80 para HTTP) |
+| `INGRESS` | Controla que trafico puede llegar al servicio: `ALL` = acceso publico desde internet · `INTERNAL` = solo desde VPC interna · `INTERNAL_AND_CLOUD_LOAD_BALANCING` = interno + Load Balancer de Google |
+| `ULTIMA REVISION` | Nombre de la revision mas reciente. Cada deploy o cambio de config crea una nueva revision (ej: `mi-servicio-00042-xyz`) |
+| `FECHA CREACION` | Fecha en que se creo el servicio por primera vez |
+| `ULTIMA ACTUALIZACION` | Timestamp de la ultima ejecucion del script |
 
 **Manuales:** `AMBIENTE` · `CRITICIDAD` · `PROVEEDOR RESPONSABLE` · `DESCRIPCION`
 
