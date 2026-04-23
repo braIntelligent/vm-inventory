@@ -49,19 +49,19 @@ vm-inventory/
 
 | Hoja | Contenido |
 |---|---|
-| `MAQUINAS VIRTUALES` | VMs (GCP + GCVE + Bridge) + instancias Cloud SQL |
+| `INSTANCIAS` | VMs (GCP + GCVE + Bridge) + instancias Cloud SQL |
 | `GKE` | Clusters GKE y su configuracion |
 | `ALMACENAMIENTO` | Buckets Cloud Storage |
 | `CLOUD RUN` | Servicios Cloud Run |
 | `SERVICIOS` | APIs y servicios habilitados por proyecto |
 
-> **Nota:** Cloud SQL se muestra dentro de la hoja `MAQUINAS VIRTUALES`. La columna `TIPO RECURSO` distingue entre `VIRTUAL MACHINE` y `CLOUD SQL`.
+> **Nota:** Cloud SQL se muestra dentro de la hoja `INSTANCIAS`. La columna `TIPO RECURSO` distingue entre `VIRTUAL MACHINE` y `CLOUD SQL`.
 
 ---
 
 ## Campos del Excel
 
-### Hoja MAQUINAS VIRTUALES
+### Hoja INSTANCIAS
 
 #### Automaticos — el script actualiza en cada ejecucion
 

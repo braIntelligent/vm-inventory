@@ -251,7 +251,7 @@ def write_all(resources_by_type: dict, output_path: str) -> None:
     """
     Escribe multiples hojas en el Excel segun tipo de recurso.
     El orden y configuracion de cada hoja viene del SHEET_REGISTRY.
-    Cloud SQL se fusiona en la hoja MAQUINAS VIRTUALES.
+    Cloud SQL se fusiona en la hoja INSTANCIAS.
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -464,9 +464,9 @@ CLOUDRUN_WIDTHS = {
 }
 
 # ── REGISTRO DE HOJAS ─────────────────────────────────────────────────────────
-# CLOUD SQL se fusiona en MAQUINAS VIRTUALES — no tiene hoja propia
+# CLOUD SQL se fusiona en INSTANCIAS — no tiene hoja propia
 SHEET_REGISTRY = {
-    "VIRTUAL MACHINE": ("MAQUINAS VIRTUALES", None,               None),
+    "VIRTUAL MACHINE": ("INSTANCIAS",          None,               None),
     "GKE CLUSTER":     ("GKE",                GKE_COLUMNS,        GKE_WIDTHS),
     "CLOUD STORAGE":   ("ALMACENAMIENTO",     STORAGE_COLUMNS,    STORAGE_WIDTHS),
     "API HABILITADA":  ("SERVICIOS",          APIS_COLUMNS,       APIS_WIDTHS),
