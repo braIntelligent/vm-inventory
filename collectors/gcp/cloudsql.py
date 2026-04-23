@@ -179,6 +179,7 @@ class CloudSQLCollector(BaseCollector):
                         proyecto             = project.upper(),
                         region               = region,
                         zona                 = zone,
+                        tipo_maquina         = tier.upper(),
                         vcpus                = vcpus,
                         ram_gb               = ram_gb,
                         disco_gb             = disco_gb,
