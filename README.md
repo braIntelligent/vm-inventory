@@ -49,13 +49,12 @@ vm-inventory/
 
 | Hoja | Contenido |
 |---|---|
-| `INSTANCIAS` | VMs (GCP + GCVE + Bridge) + instancias Cloud SQL |
-| `GKE` | Clusters GKE y su configuracion |
+| `INSTANCIAS` | VMs (GCP + GCVE + Bridge) + Cloud SQL + GKE Clusters |
 | `ALMACENAMIENTO` | Buckets Cloud Storage |
 | `CLOUD RUN` | Servicios Cloud Run |
 | `SERVICIOS` | APIs y servicios habilitados por proyecto |
 
-> **Nota:** Cloud SQL se muestra dentro de la hoja `INSTANCIAS`. La columna `TIPO RECURSO` distingue entre `VIRTUAL MACHINE` y `CLOUD SQL`.
+> **Nota:** Cloud SQL y GKE se muestran dentro de la hoja `INSTANCIAS`. La columna `TIPO RECURSO` distingue entre `VIRTUAL MACHINE`, `CLOUD SQL` y `GKE CLUSTER`.
 
 ---
 
@@ -69,7 +68,7 @@ Contiene VMs (GCP + GCVE + Bridge) e instancias Cloud SQL. La columna `TIPO RECU
 |---|---|
 | `NOMBRE` | Nombre del recurso |
 | `ESTADO` | VMs: `ENCENDIDA` `APAGADA` `INICIANDO` `SUSPENDIDA` · SQL: `ENCENDIDA` `APAGADA` `MANTENIMIENTO` `ERROR` |
-| `TIPO RECURSO` | `VIRTUAL MACHINE` o `CLOUD SQL` |
+| `TIPO RECURSO` | `VIRTUAL MACHINE`, `CLOUD SQL` o `GKE CLUSTER` |
 | `FUENTE` | `GCP`, `GCVE` o `BRIDGE` (origen del dato) |
 | `PROYECTO` | Proyecto GCP o etiqueta del host vCenter |
 | `REGION` | Region donde corre el recurso |

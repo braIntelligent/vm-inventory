@@ -43,7 +43,7 @@ COLUMNS = [
     ("ULTIMO APAGADO",        "ultimo_apagado"),
     ("PROGRAMA DE ENCENDIDO", "programa_encendido"),
     ("ULTIMA ACTUALIZACION",  "ultima_actualizacion"),
-    # ── BASE DE DATOS (Cloud SQL — vacias para VMs) ───────────────────────────
+    # ── BASE DE DATOS (Cloud SQL — vacias para VMs y GKE) ────────────────────
     ("MOTOR",                 "motor"),
     ("VERSION DB",            "version"),
     ("TIER",                  "tier"),
@@ -51,6 +51,16 @@ COLUMNS = [
     ("REPLICA LECTURA",       "replica_lectura"),
     ("BACKUP AUTOMATICO",     "backup_automatico"),
     ("VENTANA BACKUP",        "ventana_backup"),
+    # ── GKE (vacias para VMs y Cloud SQL) ─────────────────────────────────────
+    ("VERSION KUBERNETES",    "version_kubernetes"),
+    ("VERSION NODOS",         "version_nodos"),
+    ("AUTOPILOT",             "autopilot"),
+    ("TOTAL NODOS",           "total_nodos"),
+    ("NODOS MIN",             "nodos_min"),
+    ("NODOS MAX",             "nodos_max"),
+    ("NODE POOLS",            "node_pools"),
+    ("RELEASE CHANNEL",       "release_channel"),
+    ("WORKLOAD IDENTITY",     "workload_identity"),
     # ── SEGURIDAD / GESTION (manuales) ────────────────────────────────────────
     ("AMBIENTE",              "ambiente"),
     ("CRITICIDAD",            "criticidad"),
@@ -75,6 +85,9 @@ WIDTHS = {
     "MOTOR":12, "VERSION DB":24, "TIER":22,
     "ALTA DISPONIBILIDAD":20, "REPLICA LECTURA":16,
     "BACKUP AUTOMATICO":18, "VENTANA BACKUP":16,
+    "VERSION KUBERNETES":22, "VERSION NODOS":18,
+    "AUTOPILOT":12, "TOTAL NODOS":13, "NODOS MIN":12, "NODOS MAX":12,
+    "NODE POOLS":12, "RELEASE CHANNEL":18, "WORKLOAD IDENTITY":18,
     "AMBIENTE":14, "CRITICIDAD":12, "CATEGORIA":15,
     "PROVEEDOR RESPONSABLE":22, "PAM":8,
     "VERSION CYLANCE":18, "VERSION FOCUS":16,
@@ -92,6 +105,9 @@ ROW_COLORS = {
     "HABILITADA":     "FFD6F5D6",
     "ERROR":          "FFFFD6D6",
     "DEGRADADO":      "FFFFD6D6",
+    "APROVISIONANDO": "FFFFF3CC",
+    "RECONCILIANDO":  "FFFFF3CC",
+    "DETENIENDO":     "FFFFF3CC",
 }
 
 HEADER_COLOR = "FF375F7C"
@@ -255,15 +271,17 @@ def write_all(resources_by_type: dict, output_path: str) -> None:
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    # Fusionar Cloud SQL dentro de VIRTUAL MACHINE
+    # Fusionar Cloud SQL y GKE dentro de VIRTUAL MACHINE → hoja INSTANCIAS
     combinado = dict(resources_by_type)
-    vm_y_sql  = (
+    instancias = (
         combinado.get("VIRTUAL MACHINE", []) +
-        combinado.get("CLOUD SQL", [])
+        combinado.get("CLOUD SQL", []) +
+        combinado.get("GKE CLUSTER", [])
     )
-    vm_y_sql.sort(key=lambda r: (r.tipo_recurso, r.proyecto, r.nombre))
-    combinado["VIRTUAL MACHINE"] = vm_y_sql
+    instancias.sort(key=lambda r: (r.tipo_recurso, r.proyecto, r.nombre))
+    combinado["VIRTUAL MACHINE"] = instancias
     combinado.pop("CLOUD SQL", None)
+    combinado.pop("GKE CLUSTER", None)
 
     wb      = Workbook()
     primera = True
@@ -464,11 +482,10 @@ CLOUDRUN_WIDTHS = {
 }
 
 # ── REGISTRO DE HOJAS ─────────────────────────────────────────────────────────
-# CLOUD SQL se fusiona en INSTANCIAS — no tiene hoja propia
+# CLOUD SQL y GKE se fusionan en INSTANCIAS — no tienen hoja propia
 SHEET_REGISTRY = {
-    "VIRTUAL MACHINE": ("INSTANCIAS",          None,               None),
-    "GKE CLUSTER":     ("GKE",                GKE_COLUMNS,        GKE_WIDTHS),
-    "CLOUD STORAGE":   ("ALMACENAMIENTO",     STORAGE_COLUMNS,    STORAGE_WIDTHS),
-    "API HABILITADA":  ("SERVICIOS",          APIS_COLUMNS,       APIS_WIDTHS),
-    "CLOUD RUN":       ("CLOUD RUN",          CLOUDRUN_COLUMNS,   CLOUDRUN_WIDTHS),
+    "VIRTUAL MACHINE": ("INSTANCIAS",      None,             None),
+    "CLOUD STORAGE":   ("ALMACENAMIENTO",  STORAGE_COLUMNS,  STORAGE_WIDTHS),
+    "API HABILITADA":  ("SERVICIOS",       APIS_COLUMNS,     APIS_WIDTHS),
+    "CLOUD RUN":       ("CLOUD RUN",       CLOUDRUN_COLUMNS, CLOUDRUN_WIDTHS),
 }
