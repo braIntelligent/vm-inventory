@@ -63,27 +63,114 @@ vm-inventory/
 
 ### Hoja INSTANCIAS
 
-#### Automaticos — el script actualiza en cada ejecucion
+Contiene VMs (GCP + GCVE + Bridge) e instancias Cloud SQL. La columna `TIPO RECURSO` distingue el tipo de cada fila.
 
-**Identidad:** `NOMBRE` · `ESTADO` · `TIPO RECURSO` · `FUENTE` · `PROYECTO`
+| Campo | Descripcion |
+|---|---|
+| `NOMBRE` | Nombre del recurso |
+| `ESTADO` | VMs: `ENCENDIDA` `APAGADA` `INICIANDO` `SUSPENDIDA` · SQL: `ENCENDIDA` `APAGADA` `MANTENIMIENTO` `ERROR` |
+| `TIPO RECURSO` | `VIRTUAL MACHINE` o `CLOUD SQL` |
+| `FUENTE` | `GCP`, `GCVE` o `BRIDGE` (origen del dato) |
+| `PROYECTO` | Proyecto GCP o etiqueta del host vCenter |
+| `REGION` | Region donde corre el recurso |
+| `ZONA` | Zona de disponibilidad |
+| `VPC` | Red VPC a la que pertenece (solo VMs) |
+| `SUBRED` | Subred dentro de la VPC (solo VMs) |
+| `TIPO MAQUINA` | Familia de maquina (ej: `e2-standard-4`) o tier SQL (ej: `DB-CUSTOM-2-8192`) |
+| `VCPUS` | Cantidad de CPUs virtuales |
+| `RAM (GB)` | Memoria RAM en GB |
+| `DISCO (GB)` | Tamaño total de disco en GB |
+| `TIPO DISCO` | `SSD`, `HDD` o tipo especifico del proveedor |
+| `SISTEMA OPERATIVO` | VM: OS detectado desde la imagen · SQL: version del motor (ej: `PostgreSQL 15`) |
+| `IP INTERNA` | IP privada dentro de la red VPC |
+| `IP EXTERNA` | IP publica asignada (vacia si no tiene) |
+| `FECHA CREACION` | Fecha en que se creo el recurso |
+| `ULTIMO ENCENDIDO` | Ultima vez que se inicio la VM (solo VMs) |
+| `ULTIMO APAGADO` | Ultima vez que se detuvo la VM (solo VMs) |
+| `PROGRAMA DE ENCENDIDO` | Schedule de encendido/apagado automatico configurado (solo VMs GCP) |
+| `ULTIMA ACTUALIZACION` | Timestamp de la ultima ejecucion del script |
+| `MOTOR` | Motor de base de datos: `MYSQL`, `POSTGRESQL`, `SQL SERVER` (solo Cloud SQL) |
+| `VERSION DB` | Version especifica del motor (ej: `MySQL 8.0`, `PostgreSQL 15`) (solo Cloud SQL) |
+| `TIER` | Tier de la instancia que define CPU y RAM (ej: `db-custom-4-16384`) (solo Cloud SQL) |
+| `ALTA DISPONIBILIDAD` | `SI` si tiene replica regional activa · `NO` si es zona unica (solo Cloud SQL) |
+| `REPLICA LECTURA` | `SI` si la instancia es una replica de lectura (solo Cloud SQL) |
+| `BACKUP AUTOMATICO` | `SI` si tiene backups automaticos habilitados (solo Cloud SQL) |
+| `VENTANA BACKUP` | Hora de inicio del backup automatico en UTC (ej: `03:00`) (solo Cloud SQL) |
 
-**Ubicacion:** `REGION` · `ZONA` · `VPC` · `SUBRED`
+**Manuales — el script nunca los toca:**
 
-**Computo (VMs):** `TIPO MAQUINA` · `VCPUS` · `RAM (GB)`
+| Campo | Descripcion |
+|---|---|
+| `AMBIENTE` | `PRODUCCION` o `DESARROLLO` (dropdown) |
+| `CRITICIDAD` | `ALTA`, `MEDIA` o `BAJA` (dropdown) |
+| `CATEGORIA` | Clasificacion interna del recurso |
+| `PROVEEDOR RESPONSABLE` | Empresa o equipo responsable |
+| `PAM` | Si el acceso esta gestionado por PAM |
+| `VERSION CYLANCE` | Version del agente Cylance instalado |
+| `VERSION FOCUS` | Version del agente Focus instalado |
+| `GRUPO TENABLE` | Grupo de escaneo en Tenable.io |
+| `DESCRIPCION` | Descripcion libre |
 
-**Almacenamiento:** `DISCO (GB)` · `TIPO DISCO`
+---
 
-**Sistema:** `SISTEMA OPERATIVO`
+### Hoja GKE
 
-**Red:** `IP INTERNA` · `IP EXTERNA`
+| Campo | Descripcion |
+|---|---|
+| `NOMBRE CLUSTER` | Nombre del cluster GKE |
+| `ESTADO` | `ENCENDIDO` `APROVISIONANDO` `RECONCILIANDO` `DETENIENDO` `ERROR` `DEGRADADO` |
+| `FUENTE` / `PROYECTO` / `REGION` / `ZONA` | Origen y ubicacion del cluster |
+| `VPC` / `SUBRED` | Red VPC donde esta el cluster |
+| `VERSION KUBERNETES` | Version del plano de control (master) |
+| `VERSION NODOS` | Version de los nodos worker |
+| `AUTOPILOT` | `SI` = Google gestiona los nodos automaticamente · `NO` = cluster Standard con nodos propios |
+| `TOTAL NODOS` | Cantidad actual de nodos worker activos |
+| `NODOS MIN` / `NODOS MAX` | Rango de autoscaling configurado en los node pools |
+| `TIPO MAQUINA NODOS` | Tipo de maquina de los nodos (del primer node pool) |
+| `NODE POOLS` | Cantidad de node pools en el cluster |
+| `RELEASE CHANNEL` | Canal de actualizaciones automaticas: `RAPID` (mas nuevo) · `REGULAR` · `STABLE` (mas conservador) |
+| `WORKLOAD IDENTITY` | `SI` si permite que los pods se autentiquen con APIs de GCP sin usar claves (recomendado para seguridad) |
+| `IP CLUSTER (CIDR)` | Rango de IPs asignado a los pods del cluster |
+| `ENDPOINT API SERVER` | Direccion del servidor de API de Kubernetes |
+| `FECHA CREACION` / `ULTIMA ACTUALIZACION` | Fechas de creacion y ultimo escaneo |
 
-**Tiempo:** `FECHA CREACION` · `ULTIMO ENCENDIDO` · `ULTIMO APAGADO` · `PROGRAMA DE ENCENDIDO` · `ULTIMA ACTUALIZACION`
+**Manuales:** `AMBIENTE` · `CRITICIDAD` · `PROVEEDOR RESPONSABLE` · `DESCRIPCION`
 
-**Base de datos (Cloud SQL):** `MOTOR` · `VERSION DB` · `TIER` · `ALTA DISPONIBILIDAD` · `REPLICA LECTURA` · `BACKUP AUTOMATICO` · `VENTANA BACKUP`
+---
 
-#### Manuales — el script nunca los toca
+### Hoja ALMACENAMIENTO
 
-`AMBIENTE` · `CRITICIDAD` · `CATEGORIA` · `PROVEEDOR RESPONSABLE` · `PAM` · `VERSION CYLANCE` · `VERSION FOCUS` · `GRUPO TENABLE` · `DESCRIPCION`
+| Campo | Descripcion |
+|---|---|
+| `NOMBRE BUCKET` | Nombre del bucket (unico global en GCP) |
+| `ESTADO` | Siempre `ACTIVO` |
+| `FUENTE` / `PROYECTO` / `REGION` | Origen y ubicacion del bucket |
+| `TIPO UBICACION` | `REGION` (una region) · `DUAL_REGION` (dos regiones pareadas) · `MULTI_REGION` (continente entero) |
+| `CLASE ALMACENAMIENTO` | `STANDARD` (acceso frecuente) · `NEARLINE` (acceso ~mensual) · `COLDLINE` (acceso ~trimestral) · `ARCHIVE` (acceso anual, mas economico) |
+| `ACCESO PUBLICO` | `PUBLICO` si permite acceso anonimo · `PRIVADO` si esta restringido · `REVISAR` si no hubo permisos para verificar |
+| `VERSIONADO` | `SI` si guarda versiones anteriores de cada objeto (permite recuperar versiones borradas) |
+| `ENCRIPTACION` | `GOOGLE-MANAGED` (por defecto) · `CUSTOMER-MANAGED (CMEK)` si usa clave propia en Cloud KMS |
+| `RETENTION POLICY` | Tiempo minimo que deben conservarse los objetos antes de poder eliminarlos (ej: `365 dias`) |
+| `LIFECYCLE RULES` | `SI` si tiene reglas automaticas de transicion de clase o eliminacion de objetos |
+| `FECHA CREACION` / `ULTIMA ACTUALIZACION` | Fechas de creacion y ultimo escaneo |
+
+**Manuales:** `AMBIENTE` · `CRITICIDAD` · `PROVEEDOR RESPONSABLE` · `DESCRIPCION`
+
+---
+
+### Hoja SERVICIOS
+
+Lista de APIs y servicios GCP habilitados por proyecto. Util para auditar que servicios estan activos y detectar APIs innecesarias o riesgosas.
+
+| Campo | Descripcion |
+|---|---|
+| `API ID` | Identificador tecnico del servicio (ej: `compute.googleapis.com`, `run.googleapis.com`) |
+| `NOMBRE LEGIBLE` | Nombre comercial del servicio (ej: `Compute Engine API`, `Cloud Run Admin API`) |
+| `ESTADO` | Siempre `HABILITADA` (solo se listan APIs activas) |
+| `FUENTE` / `PROYECTO` | Origen y proyecto donde esta habilitada la API |
+| `ULTIMA ACTUALIZACION` | Timestamp de la ultima ejecucion del script |
+
+> Solo se reportan APIs de infraestructura relevantes (compute, storage, networking, AI, seguridad, etc.). Las APIs internas de Google se filtran automaticamente.
 
 ---
 

@@ -30,10 +30,12 @@ def setup(log_dir: str) -> None:
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f"{datetime.now().strftime('%Y-%m-%d')}.log")
 
-    # silenciar warnings de google auth
+    # silenciar warnings de google auth y cliente HTTP
     logging.getLogger("google.auth._default").setLevel(logging.ERROR)
     logging.getLogger("google.auth.transport").setLevel(logging.ERROR)
     logging.getLogger("urllib3").setLevel(logging.ERROR)
+    logging.getLogger("googleapiclient.discovery").setLevel(logging.ERROR)
+    logging.getLogger("googleapiclient.http").setLevel(logging.ERROR)
 
     logging.basicConfig(
         level=logging.INFO,
